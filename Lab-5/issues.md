@@ -1,88 +1,24 @@
- Lab 5: Static Code Analysis
- Museum Artifact Catalog
+# Lab 5: Static Code Analysis — Museum Artifact Catalog
 
- 1. SQL Injection Risk
+## Issues Identified and How They Were Addressed
 
-Type: Security - Medium severity
+| Issue | Type | Original Line(s) | Description | Fix Approach |
+|---|---|---|---|---|
+| SQL injection risk | Security — Medium | 11 | SQL query concatenated input values directly into the query string. | Replaced string concatenation with parameterized SQL queries using placeholders. |
+| Hardcoded password | Security — Low | 7 | Curator password was stored directly in the source code. | Removed the unused hardcoded password. |
+| Unsafe subprocess call | Security — Low | 37 | Used `subprocess.call()` with `shell=True` to print a backup notice. | Replaced the subprocess call with Python's `print()` function. |
+| Missing docstrings | Code quality | Multiple | Module and functions lacked documentation. | Added descriptive module and function docstrings. |
+| Invalid function names | Code quality | Multiple | Function names used camelCase instead of snake_case. | Renamed functions using snake_case and updated their calls. |
+| Unused import | Code quality / Style | 2 | The `datetime` module was imported but never used. | Removed the unused import. |
+| Unused argument | Code quality | 15 | The `curator` argument was accepted but never used. | Removed the unnecessary argument from the function and its call. |
+| Formatting violations | Style | Multiple | Long lines, extra blank lines and missing whitespace were reported. | Reformatted the code to follow PEP 8 style guidelines. |
+| Missing artifact handling | Robustness | Not flagged by the original reports | The original function could fail if an artifact ID did not exist. | Added a check that returns `artifact not found` when no matching artifact exists. |
 
-Line: 11
+## Verification Results
 
-Description: The SQL query is created by directly joining user input with the query string. This can allow SQL injection attacks.
+- **Pylint:** Improved from 4.85/10 to 10.00/10.
+- **Bandit:** No issues identified after the fixes.
+- **Flake8:** No violations reported after the fixes.
+- **Program test:** The catalog printed the expected display status, total value of 135000, and backup confirmation.
 
-Fix Approach:Use parameterized SQL queries with placeholders to safely insert values into the database.
-
-2. Hardcoded Password
-
-Type: Security - Low severity
-
-Line:7
-
-Description: The curator password is directly stored in the Python source code, which is not a secure practice.
-
-Fix Approach: Remove the unused hardcoded password and avoid storing sensitive credentials directly in source code.
-
-3. Unsafe Subprocess Call
-
-Type: Security - Low severity
-
-Line: 37
-
-Description: The backup notice uses `subprocess.call()` with `shell=True`, which can introduce security risks.
-
-Fix Approach: Replace the subprocess call with Python's built-in `print()` function because the program only needs to display a message.
-
- 4. Missing Docstrings
-
-Type: Code quality
-
-Lines:Multiple
-
-Description: The module and several functions do not have docstrings explaining their purpose.
-
-Fix Approach: Add meaningful docstrings to describe the module and each function.
-
- 5. Invalid Function Naming
-
-Type: Code quality
-
-Lines: 10, 15, 24, 31, 36
-
-Description: Functions use camelCase naming instead of the recommended Python snake_case naming convention.
-
-Fix Approach: Rename functions such as `addArtifact()` to `add_artifact()` and update their function calls.
-
- 6. Unused Import
-
-Type: Code quality and style
-
-Line: 2
-
-Description: The `datetime` module is imported but never used in the program.
-
-Fix Approach: Remove the unnecessary import statement.
-
- 7. Unused Function Argument
-
-Type: Code quality
-
-Line:15
-
-Description: The `curator` argument is accepted by the display status function but is never used.
-
-Fix Approach:Remove the argument if it is not required by the program's functionality.
-
- 8. Formatting Violations
-
-Type: Code style
-
-Lines: Multiple
-
-Description:The code contains long lines, extra blank lines and missing whitespace around operators.
-
-Fix Approach: Break long statements into multiple lines, remove unnecessary blank lines and follow PEP 8 formatting guidelines.
-
-Summary
-
-The original Pylint score was 4.85/10. Bandit reported one medium-severity and four low-severity findings. Flake8 reported several formatting issues.
-
-The identified issues will be fixed, and all three static analysis tools will be run again to verify that the corrections have been applied successfully.
+The original line numbers refer to the code before changes. The missing artifact handling was an additional improvement rather than a finding reported by the three tools.
